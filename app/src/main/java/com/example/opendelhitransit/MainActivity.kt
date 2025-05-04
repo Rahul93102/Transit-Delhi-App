@@ -34,8 +34,11 @@ import com.example.opendelhitransit.features.home.HomeScreen
 import com.example.opendelhitransit.features.metro.MetroScreen
 import com.example.opendelhitransit.features.transit.RealTimeTransitScreen
 import com.example.opendelhitransit.features.transit.LiveBusMapScreen
+import com.example.opendelhitransit.features.settings.SettingsScreen
+import com.example.opendelhitransit.features.bus.BusMapScreen
 import com.example.opendelhitransit.ui.theme.OpenDelhiTransitTheme
 import com.example.opendelhitransit.viewmodel.TransitViewModel
+import com.example.opendelhitransit.viewmodel.BusMapViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.hilt.navigation.compose.hiltViewModel
 import javax.inject.Inject
@@ -43,10 +46,10 @@ import com.example.opendelhitransit.data.ThemePreferences
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    
+
     @Inject
     lateinit var themePreferences: ThemePreferences
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -67,7 +70,7 @@ class MainActivity : ComponentActivity() {
 fun MainAppContent() {
     val navController = rememberNavController()
     var selectedItemIndex by remember { mutableStateOf(0) }
-    
+
     val navigationItems = listOf(
         NavigationItem(
             title = "Home",
@@ -100,7 +103,7 @@ fun MainAppContent() {
             route = "fuel"
         )
     )
-    
+
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -158,6 +161,15 @@ fun MainAppContent() {
             }
             composable("fuel") {
                 FuelScreen()
+            }
+            // Add settings screen to navigation
+            composable("settings") {
+                SettingsScreen()
+            }
+            composable("bus_map") {
+                // Get BusMapViewModel instance and explicitly pass it to BusMapScreen
+                val busMapViewModel = hiltViewModel<BusMapViewModel>()
+                BusMapScreen(viewModel = busMapViewModel)
             }
         }
     }

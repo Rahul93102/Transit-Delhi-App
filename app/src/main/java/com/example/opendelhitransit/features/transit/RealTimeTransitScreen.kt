@@ -126,7 +126,7 @@ fun RealTimeTransitScreen(
                     containerColor = MaterialTheme.colorScheme.primary
                 ),
                 actions = {
-                    IconButton(onClick = { navController.navigate("live_bus_map") }) {
+                    IconButton(onClick = { navController.navigate("bus_map") }) {
                         Icon(
                             imageVector = Icons.Default.Map,
                             contentDescription = "See Map",
@@ -193,7 +193,7 @@ fun RealTimeTransitScreen(
                         Spacer(modifier = Modifier.weight(1f))
 
                         Button(
-                            onClick = { navController.navigate("live_bus_map") },
+                            onClick = { navController.navigate("bus_map") },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary
                             ),

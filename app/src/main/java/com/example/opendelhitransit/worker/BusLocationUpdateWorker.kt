@@ -15,25 +15,25 @@ class BusLocationUpdateWorker @AssistedInject constructor(
     @Assisted params: WorkerParameters,
     private val busRepository: BusRepository
 ) : CoroutineWorker(context, params) {
-    
+
     companion object {
         private const val TAG = "BusLocationUpdateWorker"
         private const val MAX_RETRY_COUNT = 3
     }
-    
+
     override suspend fun doWork(): Result {
         Log.d(TAG, "Refreshing bus locations")
-        
+
         return try {
             val success = busRepository.refreshBusLocations()
-            
+
             if (success) {
                 Log.d(TAG, "Successfully refreshed bus locations")
                 Result.success()
             } else {
                 val runAttemptCount = runAttemptCount
                 Log.w(TAG, "Failed to refresh bus locations (attempt $runAttemptCount)")
-                
+
                 if (runAttemptCount < MAX_RETRY_COUNT) {
                     Result.retry()
                 } else {
@@ -45,7 +45,7 @@ class BusLocationUpdateWorker @AssistedInject constructor(
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error refreshing bus locations", e)
-            
+
             if (runAttemptCount < MAX_RETRY_COUNT) {
                 Result.retry()
             } else {
@@ -56,4 +56,4 @@ class BusLocationUpdateWorker @AssistedInject constructor(
             }
         }
     }
-} 
+}
