@@ -27,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.Button
@@ -37,6 +38,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -63,6 +65,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.opendelhitransit.data.model.VehicleData
 import com.example.opendelhitransit.ui.theme.CardBackground
 import com.example.opendelhitransit.ui.theme.DarkBlue
@@ -81,7 +84,8 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun RealTimeTransitScreen(
-    viewModel: TransitViewModel = hiltViewModel()
+    viewModel: TransitViewModel = hiltViewModel(),
+    navController: NavController
 ) {
     val vehicles by viewModel.vehicles.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -120,7 +124,16 @@ fun RealTimeTransitScreen(
                 title = { Text("Real-Time Transit", color = MaterialTheme.colorScheme.onPrimary) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary
-                )
+                ),
+                actions = {
+                    IconButton(onClick = { navController.navigate("live_bus_map") }) {
+                        Icon(
+                            imageVector = Icons.Default.Map,
+                            contentDescription = "See Map",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -129,7 +142,7 @@ fun RealTimeTransitScreen(
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(
-                    Icons.Default.Refresh, 
+                    Icons.Default.Refresh,
                     contentDescription = "Refresh",
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
@@ -143,7 +156,7 @@ fun RealTimeTransitScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            // Header Card with Auto-refresh switch
+            // Header Card with Auto-refresh switch and "See Map" Button
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
@@ -176,6 +189,29 @@ fun RealTimeTransitScreen(
                             fontSize = 20.sp,
                             color = Color.White
                         )
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Button(
+                            onClick = { navController.navigate("live_bus_map") },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            ),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Map,
+                                contentDescription = "See Map",
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "See Map",
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontSize = 14.sp
+                            )
+                        }
                     }
                     
                     Spacer(modifier = Modifier.height(16.dp))
