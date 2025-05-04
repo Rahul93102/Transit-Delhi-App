@@ -59,9 +59,9 @@ class OpenDelhiTransitApp : Application(), Configuration.Provider {
             .build()
 
         val workRequest = PeriodicWorkRequestBuilder<BusLocationUpdateWorker>(
-            repeatInterval = 15,
+            repeatInterval = 5,
             repeatIntervalTimeUnit = TimeUnit.MINUTES,
-            flexTimeInterval = 5,
+            flexTimeInterval = 1,
             flexTimeIntervalUnit = TimeUnit.MINUTES
         )
         .setConstraints(constraints)
@@ -73,6 +73,7 @@ class OpenDelhiTransitApp : Application(), Configuration.Provider {
             ExistingPeriodicWorkPolicy.UPDATE,
             workRequest
         )
+        Log.i("OpenDelhiTransitApp", "Scheduled periodic bus location update")
     }
 
     private fun scheduleFrequentBusLocationUpdates() {
