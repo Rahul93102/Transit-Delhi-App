@@ -8,6 +8,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.opendelhitransit.data.ThemePreferences
 import com.example.opendelhitransit.worker.BusLocationUpdateWorker
 import dagger.hilt.android.HiltAndroidApp
 import java.util.concurrent.TimeUnit
@@ -19,8 +20,22 @@ class OpenDelhiTransitApp : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
     
+    // Theme preferences
+    @Inject
+    lateinit var themePreferences: ThemePreferences
+    
+    companion object {
+        // Static instance for easy access to theme preferences
+        private lateinit var appInstance: OpenDelhiTransitApp
+        
+        fun getInstance(): OpenDelhiTransitApp {
+            return appInstance
+        }
+    }
+    
     override fun onCreate() {
         super.onCreate()
+        appInstance = this
         
         // Schedule periodic bus location updates
         schedulePeriodicBusLocationUpdates()
