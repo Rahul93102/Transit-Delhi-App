@@ -82,11 +82,11 @@ fun SettingsScreen(
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
-                            text = "Color Blind Mode",
+                            text = "Color Blind Mode for maps",
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
-                            text = "Adjust colors for better visibility",
+                            text = "Adjust red color marker for better visibility",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

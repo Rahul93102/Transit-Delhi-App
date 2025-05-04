@@ -55,12 +55,12 @@ fun BusMapScreen(
     val isAutoRefreshEnabled by viewModel.isAutoRefreshEnabled.collectAsState()
     val mapCenterPosition by viewModel.mapCenterPosition.collectAsState()
     val mapZoom by viewModel.mapZoom.collectAsState()
-    
+
     val snackbarHostState = remember { SnackbarHostState() }
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(mapCenterPosition, mapZoom)
     }
-    
+
     val context = LocalContext.current
     var hasLocationPermission by remember {
         mutableStateOf(
@@ -70,25 +70,25 @@ fun BusMapScreen(
             ) == PackageManager.PERMISSION_GRANTED
         )
     }
-    
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         hasLocationPermission = isGranted
     }
-    
+
     LaunchedEffect(Unit) {
         if (!hasLocationPermission) {
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
-    
+
     // Update camera position when map center or zoom changes in ViewModel
     LaunchedEffect(mapCenterPosition, mapZoom) {
         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(mapCenterPosition, mapZoom)
         cameraPositionState.animate(cameraUpdate)
     }
-    
+
     // Update ViewModel with camera position changes from user interaction
     DisposableEffect(cameraPositionState) {
         onDispose {
@@ -98,7 +98,7 @@ fun BusMapScreen(
             }
         }
     }
-    
+
     // Show error in snackbar
     LaunchedEffect(error) {
         error?.let {
@@ -106,7 +106,7 @@ fun BusMapScreen(
             viewModel.clearError()
         }
     }
-    
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
@@ -122,7 +122,7 @@ fun BusMapScreen(
                         tint = if (isAutoRefreshEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                     )
                 }
-                
+
                 // Manual refresh button
                 FloatingActionButton(
                     onClick = { viewModel.refreshBusLocations() },
@@ -165,7 +165,7 @@ fun BusMapScreen(
                     )
                 }
             }
-            
+
             if (isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -174,7 +174,7 @@ fun BusMapScreen(
                     CircularProgressIndicator()
                 }
             }
-            
+
             // Show bus count
             Box(
                 modifier = Modifier
@@ -190,4 +190,4 @@ fun BusMapScreen(
             }
         }
     }
-} 
+}

@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Card
@@ -73,17 +74,17 @@ import com.example.opendelhitransit.viewmodel.ThemeViewModel
 fun HomeScreen(navController: NavHostController) {
     // Get ThemeViewModel instance
     val themeViewModel: ThemeViewModel = hiltViewModel()
-    
+
     // State for showing/hiding theme selector dialog
     var showThemeSelector by remember { mutableStateOf(false) }
-    
+
     if (showThemeSelector) {
         ThemeSelectorDialog(
             viewModel = themeViewModel,
             onDismiss = { showThemeSelector = false }
         )
     }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -101,6 +102,21 @@ fun HomeScreen(navController: NavHostController) {
                     )
                 },
                 actions = {
+                    // Settings button
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .clickable { navController.navigate("settings") }
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Settings",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+
                     // Theme selector button
                     Box(
                         modifier = Modifier
@@ -115,7 +131,7 @@ fun HomeScreen(navController: NavHostController) {
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
-                    
+
                     // Search icon
                     Icon(
                         imageVector = Icons.Rounded.Search,
@@ -177,7 +193,7 @@ fun HomeScreen(navController: NavHostController) {
                     )
                 }
             }
-            
+
             // Metro Logo Card (Elevated)
             Card(
                 modifier = Modifier
@@ -204,7 +220,7 @@ fun HomeScreen(navController: NavHostController) {
                     )
                 }
             }
-            
+
             // Quick Options Row
             Row(
                 modifier = Modifier
@@ -217,16 +233,16 @@ fun HomeScreen(navController: NavHostController) {
                     label = "Metro Route",
                     onClick = { navController.navigate("metro") }
                 )
-                
+
                 QuickOptionItem(
                     icon = Icons.Filled.DirectionsBus,
                     label = "Bus Routes",
                     onClick = { navController.navigate("real_time_transit") }
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Features section with new design
             Text(
                 text = "Features",
@@ -236,21 +252,21 @@ fun HomeScreen(navController: NavHostController) {
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             )
-            
+
             EnhancedFeatureCard(
                 icon = Icons.Filled.Train,
                 title = "Metro Information",
                 description = "Get details about Delhi Metro lines, stations, timings, and fares",
                 onClick = { navController.navigate("metro") }
             )
-            
+
             EnhancedFeatureCard(
                 icon = Icons.Filled.DirectionsBus,
                 title = "Journey Planner",
                 description = "Plan your journey across Delhi using multiple transportation options",
                 onClick = { navController.navigate("real_time_transit") }
             )
-            
+
 //            EnhancedFeatureCard(
 //                icon = Icons.Filled.DirectionsWalk,
 //                title = "Step Tracker",
@@ -264,9 +280,9 @@ fun HomeScreen(navController: NavHostController) {
 //                description = "Interactive map of Delhi Metro network with all lines and stations",
 //                onClick = { navController.navigate("metro") }
 //            )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // About section with enhanced design
             Text(
                 text = "About",
@@ -276,7 +292,7 @@ fun HomeScreen(navController: NavHostController) {
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             )
-            
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -297,17 +313,17 @@ fun HomeScreen(navController: NavHostController) {
                         style = MaterialTheme.typography.bodyMedium,
                         lineHeight = 20.sp
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     Text(
                         text = "Data Sources",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    
+
                     Spacer(modifier = Modifier.height(8.dp))
-                    
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(vertical = 4.dp)
@@ -323,7 +339,7 @@ fun HomeScreen(navController: NavHostController) {
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
-                    
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(vertical = 4.dp)
@@ -339,7 +355,7 @@ fun HomeScreen(navController: NavHostController) {
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
-                    
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(vertical = 4.dp)
@@ -357,7 +373,7 @@ fun HomeScreen(navController: NavHostController) {
                     }
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -436,7 +452,7 @@ fun EnhancedFeatureCard(
                         .size(32.dp)
                 )
             }
-            
+
             Column(
                 modifier = Modifier
                     .padding(start = 16.dp)
@@ -447,7 +463,7 @@ fun EnhancedFeatureCard(
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                
+
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
@@ -456,4 +472,4 @@ fun EnhancedFeatureCard(
             }
         }
     }
-} 
+}

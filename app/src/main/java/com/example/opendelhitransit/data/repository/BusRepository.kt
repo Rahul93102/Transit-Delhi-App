@@ -18,41 +18,41 @@ class BusRepository @Inject constructor(
     private val busLocationDao: BusLocationDao
 ) {
     private val TAG = "BusRepository"
-    
+
     fun getAllBusLocations(): Flow<List<BusLocation>> {
         return busLocationDao.getAllBusLocations()
     }
-    
+
     fun getBusLocationsByRoute(routeId: String): Flow<List<BusLocation>> {
         return busLocationDao.getBusLocationsByRoute(routeId)
     }
-    
+
     fun getBusLocationByVehicleId(vehicleId: String): Flow<BusLocation?> {
         return busLocationDao.getBusLocationByVehicleId(vehicleId)
     }
-    
+
     fun getAllRouteIds(): Flow<List<String>> {
         return busLocationDao.getAllRouteIds()
     }
-    
+
     suspend fun refreshBusLocations(): Boolean = withContext(Dispatchers.IO) {
         try {
             Log.d(TAG, "Fetching bus locations from API")
             val response = transitApiService.getVehiclePositions(TransitApiService.API_KEY)
-            
+
             if (response.isSuccessful) {
                 val responseBody = response.body()
                 if (responseBody != null) {
                     // Parse the Protocol Buffer response
                     val busLocations = GtfsRtUtil.parseVehiclePositions(responseBody)
-                    
+
                     Log.d(TAG, "Parsed ${busLocations.size} bus locations from Protocol Buffers")
-                    
+
                     if (busLocations.isNotEmpty()) {
                         // Clean old entries that are older than 30 minutes
                         val thirtyMinutesAgo = Date(System.currentTimeMillis() - 30 * 60 * 1000)
                         busLocationDao.deleteOldEntries(thirtyMinutesAgo)
-                        
+
                         // Insert new data
                         busLocationDao.insertAll(busLocations)
                         Log.d(TAG, "Inserted ${busLocations.size} bus locations into database")
@@ -75,13 +75,13 @@ class BusRepository @Inject constructor(
             return@withContext false
         }
     }
-    
+
     suspend fun getDataAgeMinutes(): Long = withContext(Dispatchers.IO) {
         val latestTimestamp = busLocationDao.getLatestTimestamp() ?: 0
         if (latestTimestamp == 0L) return@withContext Long.MAX_VALUE
-        
+
         val currentTime = System.currentTimeMillis() / 1000
         val diffSeconds = currentTime - latestTimestamp
         return@withContext diffSeconds / 60
     }
-} 
+}
