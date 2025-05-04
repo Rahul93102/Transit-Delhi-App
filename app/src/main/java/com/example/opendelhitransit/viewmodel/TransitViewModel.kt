@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TransitViewModel @Inject constructor(
-    private val repository: TransitRepository
+    val repository: TransitRepository
 ) : ViewModel() {
     
     // Auto-refresh interval (in milliseconds)
