@@ -38,14 +38,20 @@ import com.example.opendelhitransit.ui.theme.OpenDelhiTransitTheme
 import com.example.opendelhitransit.viewmodel.TransitViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.hilt.navigation.compose.hiltViewModel
+import javax.inject.Inject
+import com.example.opendelhitransit.data.ThemePreferences
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    
+    @Inject
+    lateinit var themePreferences: ThemePreferences
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            OpenDelhiTransitTheme {
+            OpenDelhiTransitTheme(themePreferences = themePreferences) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

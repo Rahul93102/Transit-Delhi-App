@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Card
@@ -41,6 +42,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,15 +58,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.opendelhitransit.R
+import com.example.opendelhitransit.ui.components.ThemeSettingsButton
+import com.example.opendelhitransit.ui.components.ThemeSelectorDialog
 import com.example.opendelhitransit.ui.theme.PrimaryColor
 import com.example.opendelhitransit.ui.theme.PrimaryVariant
 import com.example.opendelhitransit.ui.theme.SecondaryColor
+import com.example.opendelhitransit.viewmodel.ThemeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavHostController) {
+    // Get ThemeViewModel instance
+    val themeViewModel: ThemeViewModel = hiltViewModel()
+    
+    // State for showing/hiding theme selector dialog
+    var showThemeSelector by remember { mutableStateOf(false) }
+    
+    if (showThemeSelector) {
+        ThemeSelectorDialog(
+            viewModel = themeViewModel,
+            onDismiss = { showThemeSelector = false }
+        )
+    }
+    
     Scaffold(
         topBar = {
             TopAppBar(
@@ -79,6 +101,22 @@ fun HomeScreen(navController: NavHostController) {
                     )
                 },
                 actions = {
+                    // Theme selector button
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .clickable { showThemeSelector = true }
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Palette,
+                            contentDescription = "Theme Settings",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    
+                    // Search icon
                     Icon(
                         imageVector = Icons.Rounded.Search,
                         contentDescription = "Search",
@@ -104,8 +142,8 @@ fun HomeScreen(navController: NavHostController) {
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
-                                PrimaryColor,
-                                PrimaryVariant
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.primaryContainer
                             )
                         )
                     )
@@ -121,13 +159,13 @@ fun HomeScreen(navController: NavHostController) {
                         text = "Welcome to",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                     Text(
                         text = "Open Delhi Transit",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
@@ -135,7 +173,7 @@ fun HomeScreen(navController: NavHostController) {
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Center,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
@@ -175,24 +213,15 @@ fun HomeScreen(navController: NavHostController) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 QuickOptionItem(
-                    icon = Icons.Filled.Map,
-                    label = "Metro Map",
-                    onClick = { navController.navigate("metro") }
-                )
-                QuickOptionItem(
                     icon = Icons.Filled.Train,
-                    label = "Trains",
+                    label = "Metro Route",
                     onClick = { navController.navigate("metro") }
                 )
+                
                 QuickOptionItem(
                     icon = Icons.Filled.DirectionsBus,
                     label = "Bus Routes",
                     onClick = { navController.navigate("transit_app") }
-                )
-                QuickOptionItem(
-                    icon = Icons.Filled.DirectionsWalk,
-                    label = "Steps",
-                    onClick = { navController.navigate("step_tracker") }
                 )
             }
             

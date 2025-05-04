@@ -107,7 +107,7 @@ Java_com_example_opendelhitransit_data_native_MetroNativeLib_findFastestPathNati
     LOGI("Path found with %d stations, %d lines, %.2f km, %.2f min", 
          static_cast<int>(path.stationIds.size()), static_cast<int>(path.lineIds.size()), 
          path.totalDistance, path.totalTime);
-    
+        
     // Convert to Java object
     return createJavaMetroPath(env, path);
 }
@@ -117,8 +117,8 @@ Java_com_example_opendelhitransit_data_native_MetroNativeLib_findShortestPathByN
     if (!gPathFinder) {
         LOGE("Path finder not initialized");
         return nullptr;
-    }
-    
+        }
+        
     // Convert Java strings to C++ strings
     const char* sourceNameChars = env->GetStringUTFChars(sourceName, nullptr);
     const char* targetNameChars = env->GetStringUTFChars(targetName, nullptr);

@@ -1,6 +1,7 @@
 package com.example.opendelhitransit.di
 
 import android.content.Context
+import com.example.opendelhitransit.data.ThemePreferences
 import com.example.opendelhitransit.data.network.GoMapsFuelStationApiService
 import com.example.opendelhitransit.data.network.TransitApiService
 import com.example.opendelhitransit.data.preferences.UserPreferences
@@ -46,5 +47,11 @@ object AppModule {
     @Singleton
     fun provideUserPreferences(@ApplicationContext context: Context): UserPreferences {
         return UserPreferencesImpl(context)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideThemePreferences(@ApplicationContext context: Context): ThemePreferences {
+        return ThemePreferences(context)
     }
 } 
