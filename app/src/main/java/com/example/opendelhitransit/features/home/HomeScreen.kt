@@ -221,7 +221,7 @@ fun HomeScreen(navController: NavHostController) {
                 QuickOptionItem(
                     icon = Icons.Filled.DirectionsBus,
                     label = "Bus Routes",
-                    onClick = { navController.navigate("transit_app") }
+                    onClick = { navController.navigate("real_time_transit") }
                 )
             }
             
@@ -248,22 +248,22 @@ fun HomeScreen(navController: NavHostController) {
                 icon = Icons.Filled.DirectionsBus,
                 title = "Journey Planner",
                 description = "Plan your journey across Delhi using multiple transportation options",
-                onClick = { navController.navigate("transit_app") }
+                onClick = { navController.navigate("real_time_transit") }
             )
             
-            EnhancedFeatureCard(
-                icon = Icons.Filled.DirectionsWalk,
-                title = "Step Tracker",
-                description = "Track your steps and movement while navigating the city",
-                onClick = { navController.navigate("step_tracker") }
-            )
-            
-            EnhancedFeatureCard(
-                icon = Icons.Filled.Map,
-                title = "Delhi Metro Map",
-                description = "Interactive map of Delhi Metro network with all lines and stations",
-                onClick = { navController.navigate("metro") }
-            )
+//            EnhancedFeatureCard(
+//                icon = Icons.Filled.DirectionsWalk,
+//                title = "Step Tracker",
+//                description = "Track your steps and movement while navigating the city",
+//                onClick = { navController.navigate("step_tracker") }
+//            )
+//
+//            EnhancedFeatureCard(
+//                icon = Icons.Filled.Map,
+//                title = "Delhi Metro Map",
+//                description = "Interactive map of Delhi Metro network with all lines and stations",
+//                onClick = { navController.navigate("metro") }
+//            )
             
             Spacer(modifier = Modifier.height(16.dp))
             
