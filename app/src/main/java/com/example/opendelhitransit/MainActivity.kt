@@ -32,7 +32,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.opendelhitransit.features.fuel.FuelScreen
 import com.example.opendelhitransit.features.home.HomeScreen
 import com.example.opendelhitransit.features.metro.MetroScreen
-import com.example.opendelhitransit.features.steptracker.StepTrackerScreen
 import com.example.opendelhitransit.features.transit.RealTimeTransitScreen
 import com.example.opendelhitransit.features.transit.LiveBusMapScreen
 import com.example.opendelhitransit.ui.theme.OpenDelhiTransitTheme
@@ -69,11 +68,11 @@ fun MainAppContent() {
             selectedIcon = Icons.Filled.Home,
             route = "home"
         ),
-        NavigationItem(
-            title = "Step Tracker",
-            selectedIcon = Icons.Filled.DirectionsWalk,
-            route = "step_tracker"
-        ),
+//        NavigationItem(
+//            title = "Step Tracker",
+//            selectedIcon = Icons.Filled.DirectionsWalk,
+//            route = "step_tracker"
+//        ),
 //        NavigationItem(
 //            title = "Transit",
 //            selectedIcon = Icons.Filled.DirectionsBus,
@@ -132,9 +131,9 @@ fun MainAppContent() {
             composable("home") {
                 HomeScreen(navController = navController)
             }
-            composable("step_tracker") {
-                StepTrackerScreen(navController = navController)
-            }
+//            composable("step_tracker") {
+//                StepTrackerScreen(navController = navController)
+//            }
 //            composable("transit_app") {
 //                TransitScreen(navController = navController)
 //            }
