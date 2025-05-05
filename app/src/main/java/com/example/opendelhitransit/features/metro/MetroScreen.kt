@@ -24,6 +24,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -61,6 +62,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.example.opendelhitransit.R
 import com.example.opendelhitransit.data.model.MetroPath
 import com.example.opendelhitransit.data.model.MetroStation
@@ -68,36 +70,39 @@ import com.example.opendelhitransit.viewmodel.MetroViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
+fun MetroScreen(
+    viewModel: MetroViewModel = hiltViewModel(),
+    navController: NavHostController? = null
+) {
     val uiState by viewModel.uiState.collectAsState()
-    
+
     val snackbarHostState = remember { SnackbarHostState() }
     val focusManager = LocalFocusManager.current
-    
+
     var searchQuery by remember { mutableStateOf("") }
     var sourceStation by remember { mutableStateOf("") }
     var destinationStation by remember { mutableStateOf("") }
     var selectionMode by remember { mutableStateOf<String?>(null) } // "source" or "destination"
-    
+
     val context = LocalContext.current
-    
+
     // Initialize metro data
     LaunchedEffect(Unit) {
         viewModel.initializeMetroGraph(context.assets)
     }
-    
+
     // Show error in snackbar
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let {
             snackbarHostState.showSnackbar(it)
         }
     }
-    
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { 
+                title = {
                     if (uiState.currentPath != null && !uiState.isLoading && uiState.currentPath!!.isValid()) {
                         // Show journey details in the top bar
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -115,9 +120,9 @@ fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
                                         text = String.format("%.1f km", uiState.currentPath!!.distance),
                                         style = MaterialTheme.typography.bodySmall
                                     )
-                                    
+
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    
+
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_time),
                                         contentDescription = null,
@@ -129,9 +134,9 @@ fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
                                         text = String.format("%d min", uiState.currentPath!!.time.toInt()),
                                         style = MaterialTheme.typography.bodySmall
                                     )
-                                    
+
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    
+
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_station),
                                         contentDescription = null,
@@ -143,9 +148,9 @@ fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
                                         text = "${uiState.currentPath!!.stations.size}",
                                         style = MaterialTheme.typography.bodySmall
                                     )
-                                    
+
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    
+
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_interchange),
                                         contentDescription = null,
@@ -162,6 +167,15 @@ fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
                         }
                     } else {
                         Text("Delhi Metro")
+                    }
+                },
+                actions = {
+                    // Add Map button
+                    IconButton(onClick = { navController?.navigate("metro_map") }) {
+                        Icon(
+                            imageVector = Icons.Default.Map,
+                            contentDescription = "View Metro Map"
+                        )
                     }
                 }
             )
@@ -209,12 +223,12 @@ fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
                     }
                 }
             }
-            
+
             // Search Station
             OutlinedTextField(
                 value = searchQuery,
-                onValueChange = { 
-                    searchQuery = it 
+                onValueChange = {
+                    searchQuery = it
                     // In a real implementation, this would filter stations based on searchQuery
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -222,7 +236,7 @@ fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
                 trailingIcon = {
                     if (searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { 
+                        IconButton(onClick = {
                             searchQuery = ""
                         }) {
                             Icon(Icons.Default.Clear, contentDescription = "Clear")
@@ -237,9 +251,9 @@ fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
                 ),
                 singleLine = true
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Route Planner (only show if not in selection mode)
             if (selectionMode == null) {
                 Card(
@@ -256,9 +270,9 @@ fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         // Source Station
                         OutlinedTextField(
                             value = sourceStation,
@@ -279,9 +293,9 @@ fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
                             ),
                             enabled = false
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         // Destination Station
                         OutlinedTextField(
                             value = destinationStation,
@@ -302,9 +316,9 @@ fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
                             ),
                             enabled = false
                         )
-                        
+
                         Spacer(modifier = Modifier.height(16.dp))
-                        
+
                         // Find Route Button
                         Button(
                             onClick = {
@@ -320,20 +334,20 @@ fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
                     }
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Display station list or the route
             if ((selectionMode != null || searchQuery.isNotEmpty()) && !uiState.isLoading) {
                 // Determine which stations to show - either filtered by search or all
                 val stationsToShow = if (searchQuery.isNotEmpty()) {
-                    uiState.stationNames.filter { 
-                        it.contains(searchQuery, ignoreCase = true) 
+                    uiState.stationNames.filter {
+                        it.contains(searchQuery, ignoreCase = true)
                     }
                 } else {
                     uiState.stationNames
                 }
-                
+
                 if (stationsToShow.isNotEmpty()) {
                     Row(
                         modifier = Modifier
@@ -342,23 +356,23 @@ fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                Text(
+                        Text(
                             text = if (searchQuery.isNotEmpty()) "Matching Stations" else "All Stations",
-                    fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Bold,
                         )
-                        
+
                         Text(
                             text = "${stationsToShow.size} stations",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                    
+
                     // Group stations by their first letter
-                    val groupedStations = stationsToShow.groupBy { 
-                        it.firstOrNull()?.uppercaseChar() ?: '#' 
+                    val groupedStations = stationsToShow.groupBy {
+                        it.firstOrNull()?.uppercaseChar() ?: '#'
                     }.toSortedMap()
-                
+
                     LazyColumn(
                         modifier = Modifier.heightIn(max = 400.dp)
                     ) {
@@ -379,12 +393,12 @@ fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
                                     )
                                 }
                             }
-                            
+
                             // Add stations in this section
                             items(stations) { stationName ->
                                 val isSelected = stationName == sourceStation || stationName == destinationStation
-                                
-                        StationItem(
+
+                                StationItem(
                                     stationName = stationName,
                                     isSelected = isSelected,
                                     selectionType = when(stationName) {
@@ -392,26 +406,26 @@ fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
                                         destinationStation -> "destination"
                                         else -> null
                                     },
-                            onClick = {
-                                when (selectionMode) {
-                                    "source" -> {
+                                    onClick = {
+                                        when (selectionMode) {
+                                            "source" -> {
                                                 sourceStation = stationName
-                                        selectionMode = null
-                                    }
-                                    "destination" -> {
+                                                selectionMode = null
+                                            }
+                                            "destination" -> {
                                                 destinationStation = stationName
-                                        selectionMode = null
+                                                selectionMode = null
+                                            }
+                                            else -> {
+                                                // Just view station info
+                                            }
+                                        }
+                                        searchQuery = ""
+                                        focusManager.clearFocus()
                                     }
-                                    else -> {
-                                        // Just view station info
-                                    }
-                                }
-                                searchQuery = ""
-                                focusManager.clearFocus()
+                                )
                             }
-                        )
-                    }
-                }
+                        }
                     }
                 } else {
                     Text("No stations found matching '$searchQuery'")
@@ -453,17 +467,17 @@ fun MetroScreen(viewModel: MetroViewModel = hiltViewModel()) {
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(36.dp)
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = "Browse All Stations",
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )
-                        
+
                         Spacer(modifier = Modifier.height(4.dp))
-                        
+
                         Text(
                             text = "${uiState.stationNames.size} stations available",
                             style = MaterialTheme.typography.bodyMedium,
@@ -485,7 +499,7 @@ fun StationItem(
 ) {
     // Try to detect lines from the station name
     val stationLines = detectLinesFromStationName(stationName)
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -510,7 +524,7 @@ fun StationItem(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Station icon with circle background 
+            // Station icon with circle background
             Box(
                 modifier = Modifier
                     .size(40.dp)
@@ -536,14 +550,14 @@ fun StationItem(
                     modifier = Modifier.size(24.dp)
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(12.dp))
-            
+
             Column {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                Text(
+                    Text(
                         text = stationName,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
@@ -557,16 +571,16 @@ fun StationItem(
                             MaterialTheme.colorScheme.onSurface
                         }
                     )
-                    
+
                     if (isSelected) {
                         Spacer(modifier = Modifier.width(8.dp))
-                Text(
+                        Text(
                             text = when(selectionType) {
                                 "source" -> "(From)"
                                 "destination" -> "(To)"
                                 else -> ""
                             },
-                    fontSize = 12.sp,
+                            fontSize = 12.sp,
                             color = when(selectionType) {
                                 "source" -> MaterialTheme.colorScheme.primary
                                 "destination" -> MaterialTheme.colorScheme.tertiary
@@ -575,17 +589,17 @@ fun StationItem(
                         )
                     }
                 }
-                
+
                 if (stationLines.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(4.dp))
-                    
+
                     // Line indicators
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         stationLines.forEach { line ->
                             val lineColor = getLineColorForName(line)
-                            
+
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
@@ -617,11 +631,11 @@ fun StationItem(
 private fun detectLinesFromStationName(stationName: String): List<String> {
     val name = stationName.lowercase()
     val lines = mutableListOf<String>()
-    
+
     // Check for common interchange points
     when {
-        name.contains("rajiv chowk") || name.contains("kashmere gate") || 
-        name.contains("central secretariat") || name.contains("welcome") -> {
+        name.contains("rajiv chowk") || name.contains("kashmere gate") ||
+                name.contains("central secretariat") || name.contains("welcome") -> {
             lines.add("Blue")
             lines.add("Yellow")
         }
@@ -632,7 +646,7 @@ private fun detectLinesFromStationName(stationName: String): List<String> {
         name.contains("kalkaji") || name.contains("botanical garden") -> {
             lines.add("Magenta")
             lines.add("Blue")
-            }
+        }
         name.contains("dhaula kuan") || name.contains("new delhi") -> {
             lines.add("Orange")
             lines.add("Yellow")
@@ -646,27 +660,27 @@ private fun detectLinesFromStationName(stationName: String): List<String> {
             lines.add("Blue")
         }
     }
-    
+
     // Check for keywords in station names that suggest lines
     if (lines.isEmpty()) {
-        if (name.contains("vishwavidyalaya") || name.contains("samaypur") || 
+        if (name.contains("vishwavidyalaya") || name.contains("samaypur") ||
             name.contains("hauz khas") || name.contains("huda city")) {
             lines.add("Yellow")
-        } else if (name.contains("vaishali") || name.contains("dwarka") || 
-                  name.contains("rajouri") || name.contains("noida")) {
+        } else if (name.contains("vaishali") || name.contains("dwarka") ||
+            name.contains("rajouri") || name.contains("noida")) {
             lines.add("Blue")
         } else if (name.contains("dilshad") || name.contains("rithala") ||
-                  name.contains("shaheed sthal")) {
+            name.contains("shaheed sthal")) {
             lines.add("Red")
         } else if (name.contains("badarpur") || name.contains("escorts") ||
-                  name.contains("ip extension")) {
+            name.contains("ip extension")) {
             lines.add("Violet")
         } else if (name.contains("airport") || name.contains("aerocity") ||
-                  name.contains("dhaula kuan")) {
+            name.contains("dhaula kuan")) {
             lines.add("Orange")
         }
     }
-    
+
     // Return unique lines
     return lines.distinct()
 }
@@ -674,7 +688,7 @@ private fun detectLinesFromStationName(stationName: String): List<String> {
 @Composable
 fun RouteDetails(path: MetroPath) {
     val viewModel: MetroViewModel = hiltViewModel()
-    
+
     if (!path.isValid()) {
         // If path is not valid, show an error message
         Card(
@@ -695,18 +709,18 @@ fun RouteDetails(path: MetroPath) {
                     tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier.size(64.dp)
                 )
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Text(
                     text = "No Route Found",
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.error
                 )
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 Text(
                     text = "We couldn't find a path between these stations. Please try different stations.",
                     textAlign = TextAlign.Center
@@ -715,21 +729,21 @@ fun RouteDetails(path: MetroPath) {
         }
         return
     }
-    
+
     // Now directly using station and line names from the path
     val stationNames = path.stations
     val lineNames = path.lines
     val interchangeStations = path.interchanges.toSet()
-    
+
     val sourceStationName = stationNames.firstOrNull() ?: "Unknown"
     val targetStationName = stationNames.lastOrNull() ?: "Unknown"
-    
+
     // Format distance, time, and fare for better display
     val distanceFormatted = String.format("%.1f km", path.distance)
     val timeFormatted = String.format("%d min", path.time.toInt())
     val fareEstimate = getFareEstimate(path.distance)
     val fareFormatted = String.format("₹%.0f", fareEstimate)
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -763,14 +777,14 @@ fun RouteDetails(path: MetroPath) {
                     color = MaterialTheme.colorScheme.primary
                 )
             }
-            
+
             // Divider
             Divider(
                 modifier = Modifier.padding(vertical = 8.dp),
                 thickness = 1.dp,
                 color = MaterialTheme.colorScheme.outlineVariant
             )
-            
+
             // Source and destination
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -780,15 +794,15 @@ fun RouteDetails(path: MetroPath) {
                     Text("From:", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                     Text(sourceStationName, style = MaterialTheme.typography.bodyLarge)
                 }
-                
+
                 Column(modifier = Modifier.weight(1f)) {
                     Text("To:", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                     Text(targetStationName, style = MaterialTheme.typography.bodyLarge)
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Route stats with improved formatting
             Surface(
                 modifier = Modifier.fillMaxWidth(),
@@ -823,7 +837,7 @@ fun RouteDetails(path: MetroPath) {
                             }
                             Text("Stations", fontSize = 12.sp)
                         }
-                        
+
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
@@ -843,7 +857,7 @@ fun RouteDetails(path: MetroPath) {
                             }
                             Text("Interchanges", fontSize = 12.sp)
                         }
-                        
+
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
@@ -863,7 +877,7 @@ fun RouteDetails(path: MetroPath) {
                             }
                             Text("Travel Time", fontSize = 12.sp)
                         }
-                        
+
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
@@ -884,94 +898,94 @@ fun RouteDetails(path: MetroPath) {
                             Text("Est. Fare", fontSize = 12.sp)
                         }
                     }
-                    
+
                     Spacer(modifier = Modifier.height(8.dp))
-                    
+
                     Divider(
                         modifier = Modifier.padding(vertical = 4.dp),
                         thickness = 0.5.dp,
                         color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
                     )
-                    
+
                     // Distance information in another row
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(top = 8.dp),
                         horizontalArrangement = Arrangement.Center,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
                             painter = painterResource(id = R.drawable.ic_distance),
                             contentDescription = null,
                             modifier = Modifier.size(16.dp),
                             tint = MaterialTheme.colorScheme.primary
-                                        )
+                        )
                         Spacer(modifier = Modifier.width(4.dp))
-                                        Text(
+                        Text(
                             text = "Total Distance: $distanceFormatted",
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 14.sp
-                                        )
-                                    }
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Station list
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(max = 400.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                    ) {
+            ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
+                    Text(
                         text = "ROUTE DETAILS",
-                            fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    
+
                     if (stationNames.isNotEmpty()) {
                         // Display the full station list with proper formatting
                         LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
                                 .heightIn(max = 350.dp)
-                    ) {
+                        ) {
                             itemsIndexed(stationNames) { index, stationName ->
                                 // Check if this is an interchange station
                                 val isInterchange = interchangeStations.contains(stationName)
                                 val isFirstOrLast = index == 0 || index == stationNames.size - 1
-                                
+
                                 // Get line for this station
                                 val lineName = if (index < lineNames.size) lineNames[index] else ""
                                 val lineColor = getLineColorForName(lineName)
-                                
+
                                 // Station item with enhanced styling
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                    // Station bullet with line color
-                                Box(
+                                Row(
                                     modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    // Station bullet with line color
+                                    Box(
+                                        modifier = Modifier
                                             .size(24.dp)
                                             .background(
-                                                if (isInterchange) MaterialTheme.colorScheme.primary 
+                                                if (isInterchange) MaterialTheme.colorScheme.primary
                                                 else if (isFirstOrLast) MaterialTheme.colorScheme.tertiary
-                                                else lineColor, 
+                                                else lineColor,
                                                 CircleShape
                                             )
                                             .border(
                                                 width = if (isInterchange || isFirstOrLast) 2.dp else 1.dp,
                                                 color = if (isInterchange) MaterialTheme.colorScheme.onPrimary
-                                                       else if (isFirstOrLast) MaterialTheme.colorScheme.onTertiary
-                                                       else Color.Black,
+                                                else if (isFirstOrLast) MaterialTheme.colorScheme.onTertiary
+                                                else Color.Black,
                                                 shape = CircleShape
                                             ),
                                         contentAlignment = Alignment.Center
@@ -988,54 +1002,54 @@ fun RouteDetails(path: MetroPath) {
                                         } else if (index == stationNames.size - 1) {
                                             Text("D", color = MaterialTheme.colorScheme.onTertiary)
                                         }
-                                }
-                                
+                                    }
+
                                     Spacer(modifier = Modifier.width(12.dp))
-                                
-                                Column {
-                                    Text(
+
+                                    Column {
+                                        Text(
                                             text = stationName,
                                             fontWeight = if (isInterchange || isFirstOrLast) FontWeight.Bold else FontWeight.Normal,
                                             fontSize = 16.sp,
                                             color = if (isInterchange) MaterialTheme.colorScheme.primary
-                                                   else if (isFirstOrLast) MaterialTheme.colorScheme.tertiary
-                                                   else MaterialTheme.colorScheme.onSurface
+                                            else if (isFirstOrLast) MaterialTheme.colorScheme.tertiary
+                                            else MaterialTheme.colorScheme.onSurface
                                         )
-                                        
+
                                         if (lineName.isNotEmpty()) {
-                                    Text(
+                                            Text(
                                                 text = lineName,
-                                        fontSize = 12.sp,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                                        
+                                                fontSize = 12.sp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+
                                         // Show interchange information
                                         if (isInterchange && index < stationNames.size - 1) {
                                             val nextIndex = index + 1
                                             val nextLineName = if (nextIndex < lineNames.size) lineNames[nextIndex] else ""
-                                            
+
                                             if (nextLineName != lineName && nextLineName.isNotEmpty()) {
-                                        Text(
+                                                Text(
                                                     text = "Change to $nextLineName",
-                                            fontSize = 12.sp,
+                                                    fontSize = 12.sp,
                                                     fontWeight = FontWeight.Medium,
                                                     color = MaterialTheme.colorScheme.primary
-                                        )
+                                                )
+                                            }
+                                        }
                                     }
                                 }
-                            }
-                        }
-                                
+
                                 // Line connector (don't show after the last station)
                                 if (index < stationNames.size - 1) {
                                     // Get the color for the next part of the journey
                                     val nextLineName = if (index + 1 < lineNames.size) lineNames[index + 1] else lineName
                                     val nextLineColor = getLineColorForName(nextLineName)
-                                    
+
                                     // Use current station's color up to interchange, next station's color after
                                     val lineConnectorColor = if (isInterchange) nextLineColor else lineColor
-                                    
+
                                     Box(
                                         modifier = Modifier
                                             .padding(start = 12.dp)
@@ -1079,7 +1093,7 @@ fun getLineColorForName(lineName: String): Color {
         lineNameLower.contains("blue") -> Color(0xFF0000FF)
         lineNameLower.contains("red") -> Color(0xFFFF0000)
         lineNameLower.contains("green") -> Color(0xFF008000)
-        lineNameLower.contains("violet") -> Color(0xFF8A2BE2) 
+        lineNameLower.contains("violet") -> Color(0xFF8A2BE2)
         lineNameLower.contains("orange") -> Color(0xFFFF8C00)
         lineNameLower.contains("magenta") -> Color(0xFFFF00FF)
         lineNameLower.contains("pink") -> Color(0xFFFFC0CB)
@@ -1088,4 +1102,4 @@ fun getLineColorForName(lineName: String): Color {
         lineNameLower.contains("rapid") -> Color(0xFF4682B4)
         else -> Color.Gray
     }
-} 
+}

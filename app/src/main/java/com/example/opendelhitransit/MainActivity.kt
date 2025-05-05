@@ -36,6 +36,7 @@ import com.example.opendelhitransit.features.transit.RealTimeTransitScreen
 import com.example.opendelhitransit.features.transit.LiveBusMapScreen
 import com.example.opendelhitransit.features.settings.SettingsScreen
 import com.example.opendelhitransit.features.bus.BusMapScreen
+import com.example.opendelhitransit.features.metro.MetroMapScreen
 import com.example.opendelhitransit.ui.theme.OpenDelhiTransitTheme
 import com.example.opendelhitransit.viewmodel.TransitViewModel
 import com.example.opendelhitransit.viewmodel.BusMapViewModel
@@ -147,7 +148,10 @@ fun MainAppContent() {
 //                TransitScreen(navController = navController)
 //            }
             composable("metro") {
-                MetroScreen()
+                MetroScreen(navController = navController)
+            }
+            composable("metro_map") {
+                MetroMapScreen()
             }
             composable("real_time_transit") {
                 RealTimeTransitScreen(navController = navController)
