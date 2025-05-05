@@ -205,12 +205,12 @@ fun RealTimeTransitScreen(
                                 tint = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.size(18.dp)
                             )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "See Map",
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontSize = 14.sp
-                            )
+//                            Spacer(modifier = Modifier.width(6.dp))
+//                            Text(
+//                                text = "See Map",
+//                                color = MaterialTheme.colorScheme.onPrimary,
+//                                fontSize = 14.sp
+//                            )
                         }
                     }
                     
