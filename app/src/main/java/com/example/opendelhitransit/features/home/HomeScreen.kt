@@ -222,7 +222,7 @@ fun HomeScreen(navController: NavHostController) {
                     icon = Icons.Filled.DirectionsBus,
                     label = "Bus Routes",
                     onClick = { navController.navigate("transit_app") }
-                )
+                )`
             }
             
             Spacer(modifier = Modifier.height(16.dp))
